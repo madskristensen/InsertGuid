@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<CommandTable xmlns="http://schemas.microsoft.com/VisualStudio/2005-10-18/CommandTable" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <Extern href="stdidcmd.h"/>
+  <Extern href="vsshlids.h"/>
+
+  <Commands package="guidInsertGuidCommandPackage">
+    <Buttons>
+      <Button guid="guidInsertGuidCommandPackageCmdSet" id="InsertGuidCommandId" priority="0x0900" type="Button">
+        <Parent guid="guidSHLMainMenu" id="IDG_VS_EDIT_CUTCOPY"/>
+        <Strings>
+          <ButtonText>Insert Guid</ButtonText>
+        </Strings>
+      </Button>
+    </Buttons>
+  </Commands>
+
+  <KeyBindings>
+    <KeyBinding guid="guidInsertGuidCommandPackageCmdSet" id="InsertGuidCommandId" mod1="Control" key1="K" mod2="Control" key2="VK_SPACE" editor="guidVSStd97"/>
+  </KeyBindings>
+
+  <Symbols>
+    <GuidSymbol name="guidInsertGuidCommandPackage" value="{40121d57-9e96-4986-becb-fe05620e79a8}" />
+
+    <GuidSymbol name="guidInsertGuidCommandPackageCmdSet" value="{1440eeb0-81f7-4062-b88a-99ca97249e33}">
+      <IDSymbol name="InsertGuidCommandId" value="0x0100" />
+    </GuidSymbol>
+  </Symbols>
+</CommandTable>
