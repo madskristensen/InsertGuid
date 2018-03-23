@@ -3,11 +3,14 @@
 
   <Extern href="stdidcmd.h"/>
   <Extern href="vsshlids.h"/>
+  <Include href="KnownImageIds.vsct"/>
 
   <Commands package="guidInsertGuidCommandPackage">
     <Buttons>
       <Button guid="guidInsertGuidCommandPackageCmdSet" id="InsertGuidCommandId" priority="0x0900" type="Button">
         <Parent guid="guidSHLMainMenu" id="IDG_VS_EDIT_CUTCOPY"/>
+        <Icon guid="ImageCatalogGuid" id="EditString"/>
+        <CommandFlag>IconIsMoniker</CommandFlag>
         <Strings>
           <ButtonText>Insert Guid</ButtonText>
         </Strings>
