@@ -10,8 +10,12 @@ namespace InsertGuid
 {
     internal sealed class InsertGuidCommand
     {
+        private static DTE2 _dte;
+
         public static async Task InitializeAsync(AsyncPackage package)
         {
+            _dte = await package.GetServiceAsync(typeof(DTE)) as DTE2;
+
             if (await package.GetServiceAsync(typeof(IMenuCommandService)) is OleMenuCommandService commandService)
             {
                 var cmdId = new CommandID(PackageGuids.guidInsertGuidCommandPackageCmdSet, PackageIds.InsertGuidCommandId);
@@ -22,20 +26,20 @@ namespace InsertGuid
 
         private static void Execute(object sender, EventArgs e)
         {
-            var dte = Package.GetGlobalService(typeof(DTE)) as DTE2;
-            Command cmd = dte.Commands.Item("Edit.Paste");
+            IDataObject data = Clipboard.GetDataObject();
+            Clipboard.SetText(Guid.NewGuid().ToString(), TextDataFormat.Text);
 
-            if (cmd != null && cmd.IsAvailable)
+            try
             {
-                IDataObject existing = Clipboard.GetDataObject();
-                Clipboard.SetText(Guid.NewGuid().ToString(), TextDataFormat.Text);
-                dte.Commands.Raise(cmd.Guid, cmd.ID, null, null);
-                Clipboard.SetDataObject(existing);
+                _dte.ExecuteCommand("Edit.Paste");
             }
-            else
+            catch (Exception ex)
             {
-                Clipboard.SetText(Guid.NewGuid().ToString(), TextDataFormat.Text);
-                dte.StatusBar.Text = "New GUID copied to clipboard";
+                System.Diagnostics.Debug.Write(ex);
+            }
+            finally
+            {
+                Clipboard.SetDataObject(data);
             }
         }
     }
