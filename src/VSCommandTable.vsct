@@ -9,7 +9,7 @@
     <Buttons>
       <Button guid="guidInsertGuidCommandPackageCmdSet" id="InsertGuidCommandId" priority="0x0900" type="Button">
         <Parent guid="guidSHLMainMenu" id="IDG_VS_EDIT_CUTCOPY"/>
-        <Icon guid="ImageCatalogGuid" id="EditString"/>
+        <Icon guid="ImageCatalogGuid" id="PasteAppend"/>
         <CommandFlag>IconIsMoniker</CommandFlag>
         <Strings>
           <ButtonText>Insert Guid</ButtonText>
@@ -21,6 +21,12 @@
   <KeyBindings>
     <KeyBinding guid="guidInsertGuidCommandPackageCmdSet" id="InsertGuidCommandId" mod1="Control" key1="K" mod2="Control" key2="VK_SPACE" editor="guidVSStd97"/>
   </KeyBindings>
+
+  <CommandPlacements>
+    <CommandPlacement guid="guidInsertGuidCommandPackageCmdSet" id="InsertGuidCommandId" priority="6000">
+      <Parent guid="guidSHLMainMenu" id="IDG_VS_CODEWIN_TEXTEDIT" />
+    </CommandPlacement>
+  </CommandPlacements>
 
   <Symbols>
     <GuidSymbol name="guidInsertGuidCommandPackage" value="{40121d57-9e96-4986-becb-fe05620e79a8}" />

@@ -27,10 +27,10 @@ namespace InsertGuid
 
             if (cmd != null && cmd.IsAvailable)
             {
-                string existing = Clipboard.GetText();
+                IDataObject existing = Clipboard.GetDataObject();
                 Clipboard.SetText(Guid.NewGuid().ToString(), TextDataFormat.Text);
                 dte.Commands.Raise(cmd.Guid, cmd.ID, null, null);
-                Clipboard.SetText(existing);
+                Clipboard.SetDataObject(existing);
             }
             else
             {
