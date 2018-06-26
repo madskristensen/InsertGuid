@@ -1,46 +1,38 @@
 ﻿using System;
-using System.ComponentModel.Design;
-using System.Windows.Forms;
-using EnvDTE;
-using EnvDTE80;
-using Microsoft.VisualStudio.Shell;
-using Task = System.Threading.Tasks.Task;
+using System.ComponentModel.Composition;
+using Microsoft.VisualStudio.Commanding;
+using Microsoft.VisualStudio.Editor.Commanding;
+using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.Text.Operations;
+using Microsoft.VisualStudio.Utilities;
 
-namespace InsertGuid
+namespace InsertGuid.Commands
 {
-    internal sealed class InsertGuidCommand
+    [Export(typeof(CommandBindingDefinition))]
+    [CommandBinding(PackageGuids.guidInsertGuidCmdSetString, PackageIds.cmdInsertGuid, typeof(InsertGuidCommandArgs))]
+
+    [Export(typeof(ICommandHandler))]
+    [Name(nameof(InsertGuidCommand))]
+    [ContentType("any")]
+    [TextViewRole(PredefinedTextViewRoles.Editable)]
+    public class InsertGuidCommand : ICommandHandler<InsertGuidCommandArgs>
     {
-        private static DTE2 _dte;
+        [Import]
+        private IEditorOperationsFactoryService _editorOperations = null;
 
-        public static async Task InitializeAsync(AsyncPackage package)
+        public string DisplayName => Vsix.Name;
+
+        public bool ExecuteCommand(InsertGuidCommandArgs args, CommandExecutionContext executionContext)
         {
-            _dte = await package.GetServiceAsync(typeof(DTE)) as DTE2;
+            IEditorOperations operations = _editorOperations.GetEditorOperations(args.TextView);
+            operations.ReplaceSelection(Guid.NewGuid().ToString());
 
-            if (await package.GetServiceAsync(typeof(IMenuCommandService)) is OleMenuCommandService commandService)
-            {
-                var cmdId = new CommandID(PackageGuids.guidInsertGuidCommandPackageCmdSet, PackageIds.InsertGuidCommandId);
-                var menuItem = new MenuCommand(Execute, cmdId);
-                commandService.AddCommand(menuItem);
-            }
+            return true;
         }
 
-        private static void Execute(object sender, EventArgs e)
+        public CommandState GetCommandState(InsertGuidCommandArgs args)
         {
-            IDataObject data = Clipboard.GetDataObject();
-            Clipboard.SetText(Guid.NewGuid().ToString(), TextDataFormat.Text);
-
-            try
-            {
-                _dte.ExecuteCommand("Edit.Paste");
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.Write(ex);
-            }
-            finally
-            {
-                Clipboard.SetDataObject(data);
-            }
+            return CommandState.Available;
         }
     }
 }
