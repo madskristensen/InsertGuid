@@ -5,14 +5,14 @@
 // ------------------------------------------------------------------------------
 namespace InsertGuid
 {
-    static class Vsix
-    {
-        public const string Id = "9def4441-acfd-4dd6-bffd-4531a57dee37";
-        public const string Name = "Insert Guid";
-        public const string Description = @"Makes it super easy to insert a new GUID into any editor and input field";
-        public const string Language = "en-US";
-        public const string Version = "1.0";
-        public const string Author = "Mads Kristensen";
-        public const string Tags = "";
-    }
+				static class Vsix
+				{
+								public const string Id = "9def4441-acfd-4dd6-bffd-4531a57dee37";
+								public const string Name = "Insert Guid";
+								public const string Description = @"Makes it super easy to insert a new GUID into any editor and input field";
+								public const string Language = "en-US";
+								public const string Version = "1.0";
+								public const string Author = "Mads Kristensen";
+								public const string Tags = "";
+				}
 }
