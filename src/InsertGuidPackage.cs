@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using System.Threading;
 using Microsoft.VisualStudio.Shell;
+using Task = System.Threading.Tasks.Task;
 
 namespace InsertGuid
 {
@@ -10,5 +12,11 @@ namespace InsertGuid
     [Guid(PackageGuids.guidInsertGuidPackageString)]
     [ProvideBindingPath]
     public sealed class InsertGuidPackage : AsyncPackage
-    { }
+    {
+        protected override async Task InitializeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
+        {
+            await JoinableTaskFactory.SwitchToMainThreadAsync();
+            await InsertGuidCommand.InitializeAsync(this);
+        }
+    }
 }
