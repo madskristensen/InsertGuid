@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Community.VisualStudio.Toolkit;
 using EnvDTE;
 using Microsoft.VisualStudio.Shell;
@@ -11,8 +12,10 @@ namespace InsertGuid
     {
         protected override async Task ExecuteAsync(OleMenuCmdEventArgs e)
         {
-            TextDocument doc = await VS.Editor.GetActiveTextDocumentAsync();
-            doc?.Selection.Insert(Guid.NewGuid().ToString());
+            var docView = await VS.Documents.GetActiveDocumentViewAsync();
+            var selection = docView.TextView?.Selection.SelectedSpans.FirstOrDefault();
+
+            docView?.TextBuffer.Replace(selection.Value, Guid.NewGuid().ToString());
         }
     }
 }
