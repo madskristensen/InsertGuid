@@ -12,7 +12,6 @@
         <Icon guid="ImageCatalogGuid" id="PasteAppend"/>
         <CommandFlag>IconIsMoniker</CommandFlag>
         <CommandFlag>DynamicVisibility</CommandFlag>
-        <CommandFlag>DefaultInvisible</CommandFlag>
         <Strings>
           <ButtonText>Insert Guid</ButtonText>
         </Strings>
@@ -29,11 +28,7 @@
       <Parent guid="guidSHLMainMenu" id="IDG_VS_CODEWIN_TEXTEDIT" />
     </CommandPlacement>
   </CommandPlacements>
-
-  <VisibilityConstraints>
-    <VisibilityItem guid="guidInsertGuidCmdSet" id="cmdInsertGuid" context="GUID_TextEditorFactory" />
-  </VisibilityConstraints>
-
+  
   <Symbols>
     <GuidSymbol name="guidInsertGuidPackage" value="{40121d57-9e96-4986-becb-fe05620e79a8}" />
 
