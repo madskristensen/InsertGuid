@@ -3,6 +3,7 @@ using System.Linq;
 using Community.VisualStudio.Toolkit;
 using EnvDTE;
 using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Text;
 using Task = System.Threading.Tasks.Task;
 
 namespace InsertGuid
@@ -12,10 +13,23 @@ namespace InsertGuid
     {
         protected override async Task ExecuteAsync(OleMenuCmdEventArgs e)
         {
-            var docView = await VS.Documents.GetActiveDocumentViewAsync();
-            var selection = docView.TextView?.Selection.SelectedSpans.FirstOrDefault();
+            DocumentView docView = await VS.Documents.GetActiveDocumentViewAsync();
+            NormalizedSnapshotSpanCollection selections = docView.TextView?.Selection.SelectedSpans;
 
-            docView?.TextBuffer.Replace(selection.Value, Guid.NewGuid().ToString());
+            if (selections == null)
+                return;
+
+            using (ITextEdit edit = docView.TextBuffer.CreateEdit())
+            {
+                var guid = Guid.NewGuid().ToString();
+
+                foreach (SnapshotSpan selection in selections.Reverse())
+                {
+                    edit.Replace(selection, guid);
+                }
+
+                edit.Apply();
+            }
         }
     }
 }
