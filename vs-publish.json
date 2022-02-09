@@ -1,0 +1,17 @@
+{
+  "$schema": "http://json.schemastore.org/vsix-publish",
+  "categories": [ "other", "coding" ],
+  "identity": {
+    "internalName": "InsertGuid",
+    "tags": [ "guid" ]
+  },
+  "assetFiles": [
+    {
+      "pathOnDisk": "art/command.png",
+      "targetPath": "art/command.png"
+    }
+  ],
+  "overview": "README.md",
+  "publisher": "MadsKristensen",
+  "repo": "https://github.com/MadsKristensen/InsertGuid"
+}

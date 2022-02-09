@@ -1,14 +1,16 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27518.3002
+# Visual Studio Version 17
+VisualStudioVersion = 17.2.32208.508
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InsertGuid", "src\InsertGuid.csproj", "{28C22525-03C6-4B1B-BC87-B1D8A39E87AA}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{5736025D-6540-4AE4-B635-F920F023DE1A}"
 	ProjectSection(SolutionItems) = preProject
 		appveyor.yml = appveyor.yml
+		.github\workflows\build.yaml = .github\workflows\build.yaml
 		README.md = README.md
+		vs-publish.json = vs-publish.json
 	EndProjectSection
 EndProject
 Global
