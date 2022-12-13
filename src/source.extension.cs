@@ -11,7 +11,7 @@ namespace InsertGuid
         public const string Name = "Insert Guid";
         public const string Description = @"Makes it super easy to insert a new GUID into any editor and input field";
         public const string Language = "en-US";
-        public const string Version = "1.2";
+        public const string Version = "1.3";
         public const string Author = "Mads Kristensen";
         public const string Tags = "";
     }
