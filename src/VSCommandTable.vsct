@@ -11,7 +11,6 @@
         <Parent guid="guidSHLMainMenu" id="IDG_VS_EDIT_CUTCOPY"/>
         <Icon guid="ImageCatalogGuid" id="PasteAppend"/>
         <CommandFlag>IconIsMoniker</CommandFlag>
-        <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
           <ButtonText>Insert Guid</ButtonText>
         </Strings>
