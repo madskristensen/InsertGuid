@@ -21,10 +21,11 @@ namespace InsertGuid
 
             using (ITextEdit edit = docView.TextBuffer.CreateEdit())
             {
-                var guid = Guid.NewGuid().ToString();
 
                 foreach (SnapshotSpan selection in selections.Reverse())
                 {
+                    // new guid on each line
+                    var guid = Guid.NewGuid().ToString();
                     edit.Replace(selection, guid);
                 }
 
