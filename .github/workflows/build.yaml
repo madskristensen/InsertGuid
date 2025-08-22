@@ -12,7 +12,6 @@ jobs:
   build:
     outputs:
       version: ${{ steps.vsix_version.outputs.version-number }}
-      vsix-name: ${{ steps.vsix_info.outputs.vsix-name }}
     name: Build 
     runs-on: windows-2022
     env:
@@ -22,18 +21,7 @@ jobs:
       VsixManifestSourcePath: src\source.extension.cs
       
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0 # Fetch full history for proper versioning and release notes
-
-    - name: Cache NuGet packages
-      uses: actions/cache@v4
-      with:
-        path: ~/.nuget/packages
-        key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj', '**/*.props', '**/*.targets') }}
-        restore-keys: |
-          ${{ runner.os }}-nuget-
+    - uses: actions/checkout@v4
 
     - name: Setup .NET build dependencies
       uses: timheuer/bootstrap-dotnet@v1
@@ -52,20 +40,6 @@ jobs:
     - name: Build
       run: msbuild /v:m -restore /p:OutDir=\_built
 
-    - name: Get VSIX info
-      id: vsix_info
-      shell: pwsh
-      run: |
-        $vsixPath = Get-ChildItem -Path "_built" -Filter "*.vsix" -Recurse | Select-Object -First 1
-        if ($vsixPath) {
-          $vsixName = $vsixPath.Name
-          echo "vsix-name=$vsixName" >> $env:GITHUB_OUTPUT
-          echo "Found VSIX: $vsixName"
-        } else {
-          echo "No VSIX file found"
-          exit 1
-        }
-
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
@@ -79,8 +53,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0 # Full history for rich release notes
 
       - name: Download Package artifact
         uses: actions/download-artifact@v4
@@ -90,67 +62,23 @@ jobs:
       - name: Upload to Open VSIX
         uses: timheuer/openvsixpublish@v1
         with:
-          vsix-file: ${{ needs.build.outputs.vsix-name }}
+          vsix-file: ${{ github.event.repository.name }}.vsix
+
+      - name: Publish extension to Marketplace
+        if: ${{ github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[release]') }}
+        uses: cezarypiatek/VsixPublisherAction@1.0
+        with:
+          extension-file: '${{ github.event.repository.name }}.vsix'
+          publish-manifest-file: 'vs-publish.json'
+          personal-access-code: ${{ secrets.VS_PUBLISHER_ACCESS_TOKEN }}
 
       - name: Tag and release
         if: ${{ github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[release]') }}
         id: tag_release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v${{ needs.build.outputs.version }}
-          name: Release v${{ needs.build.outputs.version }}
-          body: |
-            ## ?? Release v${{ needs.build.outputs.version }}
-            
-            ### ?? Installation
-            Download the `.vsix` file below and install it in Visual Studio:
-            1. Go to **Extensions** ? **Manage Extensions**
-            2. Click **Install from a file...**
-            3. Select the downloaded `.vsix` file
-            
-            ### ?? What's Changed
-            ${{ github.event.head_commit.message }}
-            
-            ### ?? File Verification
-            | File | SHA256 Checksum |
-            |------|-----------------|
-            | ${{ needs.build.outputs.vsix-name }} | `${{ hashFiles('**/*.vsix') }}` |
-            
-            ### ?? Stats
-            - **Build**: #${{ github.run_number }}
-            - **Commit**: ${{ github.sha }}
-            - **Branch**: ${{ github.ref_name }}
+          body: release ${{ needs.build.outputs.version }}
           generate_release_notes: true
+          tag_name: ${{ needs.build.outputs.version }}
           files: |
             **/*.vsix
-          draft: false
-          prerelease: ${{ contains(needs.build.outputs.version, '-') }}
-
-      - name: Publish extension to Marketplace
-        if: ${{ github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[release]') }}
-        uses: cezarypiatek/VsixPublisherAction@1.0
-        with:
-          extension-file: '${{ needs.build.outputs.vsix-name }}'
-          publish-manifest-file: 'vs-publish.json'
-          personal-access-code: ${{ secrets.VS_PUBLISHER_ACCESS_TOKEN }}
-
-      - name: Create deployment summary
-        if: ${{ github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[release]') }}
-        run: |
-          echo "## ?? Deployment Summary" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### ? Successfully Deployed" >> $GITHUB_STEP_SUMMARY
-          echo "- **Version**: \`${{ needs.build.outputs.version }}\`" >> $GITHUB_STEP_SUMMARY
-          echo "- **VSIX File**: \`${{ needs.build.outputs.vsix-name }}\`" >> $GITHUB_STEP_SUMMARY
-          echo "- **Build Number**: #${{ github.run_number }}" >> $GITHUB_STEP_SUMMARY
-          echo "- **Commit**: \`${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### ?? Published To" >> $GITHUB_STEP_SUMMARY
-          echo "- ? **GitHub Release**: [v${{ needs.build.outputs.version }}](https://github.com/${{ github.repository }}/releases/tag/v${{ needs.build.outputs.version }})" >> $GITHUB_STEP_SUMMARY
-          echo "- ? **Open VSIX Gallery**: Published successfully" >> $GITHUB_STEP_SUMMARY
-          echo "- ? **Visual Studio Marketplace**: Published successfully" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### ?? Metrics" >> $GITHUB_STEP_SUMMARY
-          echo "- **File Size**: \`$(Get-Item '${{ needs.build.outputs.vsix-name }}' | Select-Object -ExpandProperty Length | ForEach-Object { [math]::Round($_ / 1KB, 2) }) KB\`" >> $GITHUB_STEP_SUMMARY
-          echo "- **Workflow Duration**: ${{ github.event.repository.updated_at }}" >> $GITHUB_STEP_SUMMARY
-        shell: pwsh
